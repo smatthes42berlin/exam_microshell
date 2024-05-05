@@ -1,8 +1,18 @@
 #include "header.h"
 
-bool	is_semicolon(char *str)
+bool	more_argv_left(t_main_data *main_data)
 {
-	return (!strcmp(str, ";"));
+	return (main_data->num_cur_argv < main_data->argc);
+}
+
+bool	cur_argv_is_pipe(t_main_data *main_data)
+{
+	return (is_pipe(main_data->cur_argv));
+}
+
+bool	cur_argv_is_semicolon(t_main_data *main_data)
+{
+	return (is_semicolon(main_data->cur_argv));
 }
 
 bool	is_pipe(char *str)
@@ -10,46 +20,33 @@ bool	is_pipe(char *str)
 	return (!strcmp(str, "|"));
 }
 
-bool	cur_argv_is_semicolon(t_main_data *main_data)
+bool	is_semicolon(char *str)
 {
-	return (!strcmp(get_cur_argv(main_data), ";"));
-}
-
-bool	cur_argv_is_pipe(t_main_data *main_data)
-{
-	return (!strcmp(get_cur_argv(main_data), "|"));
-}
-
-void	skip_semicolon(t_main_data *main_data)
-{
-	while (get_cur_argv(main_data) && cur_argv_is_semicolon(main_data))
-	{
-		go_to_next_argv(main_data);
-	}
-}
-
-void	skip_pipe(t_main_data *main_data)
-{
-	while (get_cur_argv(main_data) && cur_argv_is_pipe(main_data))
-	{
-		go_to_next_argv(main_data);
-	}
-}
-
-char	*get_cur_argv(t_main_data *main_data)
-{
-	return (main_data->argv[main_data->cur_argv]);
-}
-
-bool	more_argv_left(t_main_data *main_data)
-{
-	return (main_data->cur_argv < main_data->argc);
+	return (!strcmp(str, ";"));
 }
 
 void	go_to_next_argv(t_main_data *main_data)
 {
-	(main_data->cur_argv)++;
+	(main_data->num_cur_argv)++;
+	main_data->cur_argv = (main_data->argv)[main_data->num_cur_argv];
 }
+
+void	skip_pipe(t_main_data *main_data)
+{
+	while (more_argv_left(main_data) && cur_argv_is_pipe(main_data))
+	{
+		go_to_next_argv(main_data);
+	}
+}
+
+void	skip_semicolon(t_main_data *main_data)
+{
+	while (more_argv_left(main_data) && cur_argv_is_semicolon(main_data))
+	{
+		go_to_next_argv(main_data);
+	}
+}
+
 
 void	free_exit(int code, t_main_data *main_data)
 {
@@ -64,9 +61,10 @@ int	find_next_pipe_or_semi_or_end(t_main_data *main_data)
 	int		cur_pos;
 
 	next = 0;
-	cur_pos = main_data->cur_argv;
+	cur_pos = main_data->num_cur_argv;
 	cur_argv = main_data->argv[cur_pos];
-	while (cur_pos < main_data->argc && !is_semicolon(cur_argv) && !is_pipe(cur_argv))
+	while (cur_pos < main_data->argc && !is_semicolon(cur_argv)
+		&& !is_pipe(cur_argv))
 	{
 		next++;
 		cur_pos++;
