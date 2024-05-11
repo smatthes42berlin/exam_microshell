@@ -47,7 +47,6 @@ void	skip_semicolon(t_main_data *main_data)
 	}
 }
 
-
 void	free_exit(int code, t_main_data *main_data)
 {
 	exit(code);
@@ -71,6 +70,28 @@ int	find_next_pipe_or_semi_or_end(t_main_data *main_data)
 		cur_argv = main_data->argv[cur_pos];
 	}
 	return (next);
+}
+
+int	list_open_fd(t_cmd *cmd)
+{
+	int	max_fd;
+
+	max_fd = getdtablesize();
+	if (cmd)
+		dprintf(STDERR_FILENO, "%s : \t Open descritors\n", cmd->name);
+	else
+		dprintf(STDERR_FILENO, "main : \t Open descritors for main\n");
+	for (int fd = 0; fd < max_fd; fd++)
+	{
+		if (fcntl(fd, F_GETFD) != -1)
+		{
+			if (cmd)
+				dprintf(STDERR_FILENO, "%s : open fd: \t %d\n", cmd->name, fd);
+			else
+				dprintf(STDERR_FILENO, "main : open fd: \t %d \n", fd);
+		}
+	}
+	return (0);
 }
 
 // void	char_arr_fill_null(char **arr, int num)

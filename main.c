@@ -16,7 +16,7 @@ int	main(int argc, char *argv[], char *envp[])
 
 void	init_data(t_main_data *main_data, int argc, char **argv, char **envp)
 {
-	int	i;
+	// int	i;
 
 	main_data->envp = envp;
 	main_data->argv = argv;
@@ -25,17 +25,6 @@ void	init_data(t_main_data *main_data, int argc, char **argv, char **envp)
 	main_data->cur_argv = (main_data->argv)[1];
 	main_data->num_proc = 0;
 	main_data->more_cmd_left = false;
-	i = 0;
-	while (i < PIPE_LIMIT)
-	{
-		main_data->pipes[i][0] = STDIN_FILENO;
-		main_data->pipes[i][1] = STDOUT_FILENO;
-		i++;
-	}
-	i = 0;
-	while (i < PROC_LIMIT)
-	{
-		main_data->proc[i] = DEFAULT_INT;
-		i++;
-	}
+	pipe(main_data->pipe_left);
+	pipe(main_data->pipe_right);
 }
